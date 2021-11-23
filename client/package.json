@@ -1,2 +1,5 @@
 {
+  "dependencies": {
+    "vue-meeting-selector": "^1.1.1"
+  }
 }
