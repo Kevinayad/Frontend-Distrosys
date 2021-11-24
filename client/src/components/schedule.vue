@@ -1,3 +1,4 @@
+<!--components/schedule.vue contains code taken from https://vue-meeting-selector.tuturu.io/--> 
 <template>
   <div class="simple-example">
     <vue-meeting-selector
