@@ -15,10 +15,18 @@ client.on("connect", function() {
 
     const GUITopic= topics.frontendTopic;
 
-    client.subscribe(GUITopic);
-    console.log("Subscribed to: " + GUITopic);
+    function subscribe(topic) {
+        client.subscribe(topic);
+        console.log("Subscribed to: " + topic);
+    }
+    
+    function publish(topic, message) {
+        client.publish(topic, message);
+    }
 
-    client.publish(GUITopic, 'User request: ...');
+    subscribe(GUITopic);
+
+    publish(GUITopic, 'User request: ...');
 })
 
 client.on('message', function(topic,message) {
