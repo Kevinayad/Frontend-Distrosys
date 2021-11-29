@@ -9,23 +9,7 @@ const host = localHost;
 
 const port = ':1883';
 
-const options = {
-    keepalive: 60,
-	protocolId: 'MQTT',
-	protocolVersion: 4,
-	clean: true,
-	reconnectPeriod: 1000,
-	connectTimeout: 30 * 1000,
-	will: {
-		topic: 'WillMsg',
-		payload: 'Connection Closed abnormally..!',
-		qos: 1,
-		retain: false
-	},
-    hostURL: (host+port)
-}
-
-const client = mqtt.connect(options.hostURL, options);
+var client = mqtt.connect(host+port);
 
 client.on("connect", function() {
 
@@ -37,7 +21,7 @@ client.on("connect", function() {
     }
     
     function publish(topic, message) {
-        client.publish(topic, message, { qos: 1, retain:false });
+        client.publish(topic, message);
     }
 
     subscribe(GUITopic);
