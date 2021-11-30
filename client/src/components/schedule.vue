@@ -1,4 +1,4 @@
-<!--components/schedule.vue contains code taken from https://vue-meeting-selector.tuturu.io/--> 
+<!--components/schedule.vue contains code taken from https://vue-meeting-selector.tuturu.io/-->
 <template>
   <div class="simple-example">
     <vue-meeting-selector
@@ -16,62 +16,62 @@
 </template>
 
 <script>
-import VueMeetingSelector from 'vue-meeting-selector';
+import VueMeetingSelector from 'vue-meeting-selector'
 
 export default {
   name: 'SimpleExample',
   components: {
-    VueMeetingSelector,
+    VueMeetingSelector
   },
-  data() {
+  data () {
     return {
       date: new Date(),
       meetingsDays: [],
       meeting: null,
       loading: true,
-      nbDaysToDisplay: 5,
-    };
+      nbDaysToDisplay: 5
+    }
   },
   computed: {
     // because of line-height, font-type you might need to change top value
-    classNames() {
+    classNames () {
       return {
-        tabLoading: 'loading-div',
-      };
-    },
+        tabLoading: 'loading-div'
+      }
+    }
   },
   methods: {
     // @click on button-right
-    async nextDate() {
+    async nextDate () {
       // display loading
-      this.loading = true;
+      this.loading = true
       // calcul new Date and change actual
-      this.date = newDate;
+      // this.date = newDate                    error
       // get meetings with async function
-      this.meetingsDays = await getNewDates(this.date);
+      // this.meetingsDays = await getNewDates(this.date)   error
       // hide loading
-      this.loading = false;
+      this.loading = false
     },
     // @click on button-left
-    async previousDate() {
+    async previousDate () {
       // display loading
-      this.loading = true;
+      this.loading = true
       // calcul new Date and change actual
       // you might need to handle the fact you can't go in past
-      this.date = newDate;
+      // this.date = newDate    ERROR
       // get meetings with async function
-      this.meetingsDays = await getNewDates(this.date);
+      // this.meetingsDays = await getNewDates(this.date) ERRPR
       // hide loading
-      this.loading = false;
-    },
+      this.loading = false
+    }
   },
-  async created() {
+  async created () {
     // get meetings
-    this.meetingsDays = await getNewDates(this.date);
+    // this.meetingsDays = await getNewDates(this.date) eRROR
     // hide loading
-    this.loading = false;
-  },
-};
+    this.loading = false
+  }
+}
 </script>
 
 <style scoped lang="scss">

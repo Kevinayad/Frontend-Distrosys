@@ -5,13 +5,13 @@ import BookingView from './views/BookingView.vue'
 Vue.use(Router)
 
 export default new Router({
-    mode: 'history',
-    base: process.env.BASE_URL,
-    routes: [
-      {
-        path: '/bookingview',
-        name: 'bookingview',
-        component: BookingView
-      }
-    ]
-  })
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes: [
+    {
+      path: '/bookingview',
+      name: 'bookingview',
+      component: BookingView
+    }
+  ]
+})

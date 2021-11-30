@@ -11,8 +11,8 @@ import navbar from '../components/navbar.vue'
 import schedule from '../components/schedule.vue'
 export default {
   components: { schedule, navbar },
-    setup() {
-        
-    },
+  setup () {
+
+  }
 }
 </script>
