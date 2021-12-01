@@ -12,7 +12,9 @@
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "mapbox-gl": "^2.6.1",
-    "vue": "^3.0.0",
+    "sass-loader": "^12.3.0",
+    "vue": "^3.2.23",
+    "vue-meeting-selector": "^1.1.1",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0"
   },
