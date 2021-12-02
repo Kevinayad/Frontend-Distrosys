@@ -1,7 +1,6 @@
 <!--navbar example -->
 <template>
   <b-navbar toggleable="lg" type="dark" variant="">
-    <router-link to="/home"><b-img :src="require('../assets/logo.png')"></b-img></router-link>
   </b-navbar>
 </template>
 

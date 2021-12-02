@@ -1,23 +1,22 @@
 <template>
   <div class="home">
-    <navbar/>
-    <MapboxMap/>
+    <h1>Book your dentist appointment by choosing a clinic on the map</h1>
+    <Map/>
+    <Schedule/>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import MapboxMap from '@/components/map.vue'
-import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'
-import navbar from '../components/navbar.vue'
-// import VueMeetingSelector from 'vue-meeting-selector'
+import Map from '../components/map.vue'
+import Navbar from '../components/navbar.vue'
+import Schedule from '../components/schedule.vue'
 
 export default {
   name: 'Home',
   components: {
-    MapboxMap,
-    navbar// ,
-    // VueMeetingSelector
+    Schedule,
+    Map,
+    Navbar
   }
 }
 </script>
