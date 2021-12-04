@@ -76,9 +76,9 @@ export default {
 <style scoped lang="scss">
   .simple-example {
    margin-top: 5em;
-   margin-left: 8em;
-    margin-right: 8em;
-   margin-bottom: 8em;
+   margin-left: 2em;
+    margin-right: 2em;
+   margin-bottom: 5em;
 
 //   &__meeting-selector {
 //     max-width: 700px;
