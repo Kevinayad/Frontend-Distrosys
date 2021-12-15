@@ -1,6 +1,7 @@
 const mqtt = require("mqtt");
 const topics = require("./topics");
-
+const frontendTopic = topics.frontendTopic;
+const backendTopic = topics.backendTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
 const remoteHost = ''; // Remote host
 
@@ -40,9 +41,17 @@ client.on("connect", function() {
         client.publish(topic, message, { qos: 1, retain:false });
     }
 
-    subscribe(GUITopic);
-
-    publish(GUITopic, 'User request: ...');
+    subscribe(backendTopic);
+    //TODO: Remove dummy data before merge!
+    var message = {
+        "userid": 646464,
+        "requestid": 13,
+        "dentistid": 1,
+        "issuance": 1602406766314,
+        "date": "2020-12-14"
+    };
+    var appointment = JSON.stringify(message);
+    publish(frontendTopic, appointment);
 })
 
 client.on('message', function(topic,message) {
