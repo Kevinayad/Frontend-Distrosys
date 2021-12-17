@@ -1,6 +1,6 @@
 const mqtt = require("mqtt");
 const topics = require("./topics");
-
+const willMsgTopic = topics.willMsgTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
 const remoteHost = ''; // Remote host
 
@@ -39,10 +39,10 @@ client.on("connect", function() {
     function publish(topic, message) {
         client.publish(topic, message, { qos: 1, retain:false });
     }
+    subscribe(willMsgTopic);
+    //subscribe(GUITopic);
 
-    subscribe(GUITopic);
-
-    publish(GUITopic, 'User request: ...');
+    //publish(GUITopic, 'User request: ...');
 })
 
 client.on('message', function(topic,message) {
