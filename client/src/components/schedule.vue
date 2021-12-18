@@ -16,6 +16,7 @@
 
 <script>
 import VueMeetingSelector from 'vue-meeting-selector';
+import data from '../../public/assets/data.json'
 
 export default {
   name: 'SimpleExample',
@@ -66,7 +67,8 @@ export default {
   },
   async created() {
     // get meetings
-    this.meetingsDays = await getNewDates(this.date);
+    this.meetingsDays= data;
+    //this.meetingsDays = await getNewDates(this.date);
     // hide loading
     this.loading = false;
   },

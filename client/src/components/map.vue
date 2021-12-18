@@ -30,7 +30,7 @@ export default {
         this.map = new mapboxgl.Map({
           accessToken: process.env.VUE_APP_MAP_ACCESS_TOKEN,
           container: 'map',
-          style: 'mapbox://styles/mapbox/streets-v11',
+          style: 'mapbox://styles/gusyoska/ckxb0cj6f3tly14o87awuajym',
           minzoom: 5,
           center: this.center, // use initial data as default
           zoom: this.zoom,
@@ -48,8 +48,34 @@ export default {
         // set the vue instance's data.zoom to the results of the mapbox instance method for getting the zoom
         this.zoom = this.map.getZoom()
       })
+
+        /* 
+        Add an event listener that runs
+          when a user clicks on the map element.
+        */
+      this.map.on('click', (event) => {
+      // If the user clicked on one of your markers, get its information.
+      const features = map.queryRenderedFeatures(event.point, {
+        layers: ['dentists'] // replace with your layer name
+      });
+      if (!features.length) {
+        return;
+      }
+      const feature = features[0];
+
+        /* 
+          Create a popup, specify its options 
+          and properties, and add it to the map.
+        */
+      const popup = new mapboxgl.Popup({ offset: [0, -15] })
+      .setLngLat(feature.geometry.coordinates)
+      .setHTML(
+        `<h3>${feature.properties.title}</h3><p>${feature.properties.description}</p>`
+      )
+      .addTo(map);
+      });
     }
-  }
+  },
 }
 </script>
 
