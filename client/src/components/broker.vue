@@ -1,5 +1,6 @@
+<script>
 const mqtt = require("mqtt");
-const topics = require("./topics");
+const topics = require("../../../broker/topics.js");
 const willMsgTopic = topics.willMsgTopic;
 const localHost = 'mqtt://127.0.0.1'; // Local host
 const remoteHost = ''; // Remote host
@@ -28,7 +29,7 @@ const options = {
 const client = mqtt.connect(options.hostURL, options);
 
 client.on("connect", function() {
-
+    console.log("S");
     const GUITopic= topics.frontendTopic;
 
     function subscribe(topic) {
@@ -46,15 +47,10 @@ client.on("connect", function() {
 })
 
 client.on('message', function(topic,message) {
-    //[IN PROGRESS*]
-    if (topic == willMsgtopic){
-        sendMessage(message);
+    if(topic == willMsgTopic){
+        window.alert("connection error, functions limited.")
     }
-    //[*IN PROGRESS]
     console.log(message.toString());
 })
-//[IN PROGRESS*]
-function sendMessage(mess) {
-    return 'Message';
-}
-//[*IN PROGRESS]
+
+</script>
