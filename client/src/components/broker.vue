@@ -1,3 +1,7 @@
+<template>
+    <div class="sub" v-html="buff">
+  </div>
+</template>
 <script>
 const mqtt = require("mqtt");
 const topics = require("../../../broker/topics.js");
@@ -29,7 +33,7 @@ const options = {
 const client = mqtt.connect(options.hostURL, options);
 
 client.on("connect", function() {
-    console.log("S");
+
     const GUITopic= topics.frontendTopic;
 
     function subscribe(topic) {
@@ -41,16 +45,27 @@ client.on("connect", function() {
         client.publish(topic, message, { qos: 1, retain:false });
     }
     subscribe(willMsgTopic);
-    //subscribe(GUITopic);
-
-    //publish(GUITopic, 'User request: ...');
 })
 
 client.on('message', function(topic,message) {
-    if(topic == willMsgTopic){
-        window.alert("connection error, functions limited.")
+    //[IN PROGRESS*]
+    if (topic == willMsgTopic){
+        console.log(message);
     }
+    //[*IN PROGRESS]
     console.log(message.toString());
 })
 
+export default {
+  data () {
+    return {
+      buff: 'Sub1:<br>'
+    }
+  },
+  mqtt: {
+    'WillMsg' (data) {
+      this.buff = this.buff + data + '<br>'
+    }
+  }
+}
 </script>

@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+      <Broker/>
             <!-- About-->
         <section class="page-section bg-white" id="about">
             <div class="container px-4 px-lg-5">
@@ -150,8 +151,6 @@ import Navbar from '../components/navbar.vue'
 import Schedule from '../components/schedule.vue'
 import '../../public/css/styles.css'
 import Broker from '../components/broker.vue'
-import VueMqtt from 'vue-mqtt';
-Vue.use(VueMqtt, 'ws://iot.eclipse.org/ws', options);
 
 export default {
   name: 'Home',
@@ -161,10 +160,8 @@ export default {
     Navbar,
     Broker
   },
-  //[IN PROGRESS*]
-  mounted() {
-    Broker
+  mounted () {
+    this.$mqtt.subscribe('WillMsg')
   }
-  //[*IN PROGRESS]
 }
 </script>

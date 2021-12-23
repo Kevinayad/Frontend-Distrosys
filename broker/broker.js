@@ -47,7 +47,7 @@ client.on("connect", function() {
 
 client.on('message', function(topic,message) {
     //[IN PROGRESS*]
-    if (topic == willMsgtopic){
+    if (topic == willMsgTopic){
         sendMessage(message);
     }
     //[*IN PROGRESS]
