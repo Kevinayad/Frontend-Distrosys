@@ -150,7 +150,7 @@ import Map from '../components/map.vue'
 import Navbar from '../components/navbar.vue'
 import Schedule from '../components/schedule.vue'
 import '../../public/css/styles.css'
-import Broker from '../components/broker.vue'
+import Broker from '../components/broker2.vue'
 
 export default {
   name: 'Home',
