@@ -1,29 +1,23 @@
 <script>
 import mqtt from 'mqtt'
 
+const topics = require("../../../broker/topics.js");
+const willMsgTopic = topics.willMsgTopic;
+
 export default {
   data() {
     return {
       connection: {
-        host: 'broker.emqx.io',
-        port: 8083,
-        endpoint: '/mqtt',
+        host: 'mqtt://127.0.0.1',
+        port: 1883,
+        //endpoint: '/mqtt',
         clean: true, // Reserved session
         connectTimeout: 4000, // Time out
         reconnectPeriod: 4000, // Reconnection interval
-        // Certification Information
-        clientId: 'mqttjs_3be2c321',
-        username: 'emqx_test',
-        password: 'emqx_test',
       },
       subscription: {
-        topic: 'topic/mqttx',
-        qos: 0,
-      },
-      publish: {
-        topic: 'topic/browser',
-        qos: 0,
-        payload: '{ "msg": "Hello, I am browser." }',
+        topic: willMsgTopic,
+        qos: 1,
       },
       receiveNews: '',
       qosList: [
@@ -38,9 +32,10 @@ export default {
     }
   },
 
-  methods: {
+  mounted: {
     // Create connection
     createConnection() {
+      console.log('does it reach?')
       // Connect string, and specify the connection method used through protocol
       // ws unencrypted WebSocket connection
       // wss encrypted WebSocket connection
@@ -78,6 +73,10 @@ export default {
         console.log('Subscribe to topics res', res)
       })
     },
+  },
+
+  methods: {
+    
     // 取消订阅
     doUnSubscribe() {
       const { topic } = this.subscription

@@ -161,7 +161,7 @@ export default {
     Broker
   },
   mounted () {
-    this.$mqtt.subscribe('WillMsg')
+    this.Broker
   }
 }
 </script>
