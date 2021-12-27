@@ -6,7 +6,7 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                    <Map/>
                    <hr class="divider" />
-                   <hr class="divider" />
+                   
                 </div>
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-lg-8 align-self-baseline">
