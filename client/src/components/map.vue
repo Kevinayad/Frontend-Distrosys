@@ -1,72 +1,91 @@
 <template>
-  <main>
-    <div class="text-container">
-      <p>Center: {{ center }}</p>
-      <p>Zoom: {{ zoom }}</p>
-    </div>
-    <div id="map"></div>
-  </main>
+  <div>
+    <h1> Your coordinates:</h1>
+    <p>{{ coordinates.lat}} Latitude, {{coordinates.lng}} Longitude</p>
+     <!-- <GmapAutocomplete
+        @place_changed='setPlace'
+      /> -->
+    <button @click= "showClinics">Show clinics</button>
+    <gmap-map
+        :center= "center"
+        :zoom= "7"
+        style= "width:100%;  height:600px;">
+        <gmap-marker
+          :key="index"
+          v-for="(gmp, index) in dentists"
+          :position="gmp"
+          @click="center=gmp"
+          @mouseover="displayLabel"
+        ></gmap-marker>
+    </gmap-map>
+  </div>
 </template>
-
 <script>
-import mapboxgl from 'mapbox-gl'
+const currentLocation = {lat: 59.8757264, lng: 17.65862};
+import dentists from "../../public/assets/dentistRegistry.json"
+
+
 export default {
-  name: 'MapboxMap',
-  data () {
-    // Set initial data, this.createMap() configures event listeners that update data based on user interaction
-    return {
-      center: [11.965216102046611, 57.70635929297478], // Gothenburg longitude and latitude
-      zoom: 11
-    }
+  name: 'GoogleMap',
+  data() {
+       return{
+         coordinates: {
+           lat: 0, 
+           lng: 0
+         },
+         center: { lat: 57.70635929297478, lng: 11.965216102046611},
+         currentPlace: null,
+         dentists: [],
+         markers: [],
+         places: [],
+       }
   },
-  mounted () {
-    // create the map after the component is mounted
-    this.createMap()
+   mounted() {
+    this.geolocate();
   },
   methods: {
-    createMap () {
-      try {
-        // instantiate map.  this method runs once after the vue component is mounted to the dom
-        this.map = new mapboxgl.Map({
-          accessToken: process.env.VUE_APP_MAP_ACCESS_TOKEN,
-          container: 'map',
-          style: 'mapbox://styles/mapbox/streets-v11',
-          minzoom: 5,
-          center: this.center, // use initial data as default
-          zoom: this.zoom,
-          hash: true // sets url's hash to #zoom/lat/lng
-        })
-      } catch (err) {
-        console.log('map error', err)
+    setPlace(place) {
+      this.currentPlace = place;
+    },
+    geolocate: function() {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.center = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+      });
+
+      this.dentists = [
+          {
+              lat: 57.707619,
+              lng: 11.969388,
+              label: 'Your Dentist'
+          },
+          {
+              lat: 57.685255,
+              lng: 11.942625,
+              label: '"Tooth Fairy Dentist'
+          },
+          {
+              lat: 57.709872,
+              lng: 11.940386,
+              label: 'The Crown'
+          },
+          {
+              lat: 57.694723,
+              lng: 11.991153,
+              label: 'Lisebergs Dentists'
+          }
+      ];
+ 
+    },
+    showClinics(){
+      this.markers= [
+        {
+          position: currentLocation,
       }
-      // set mapbox event listeners to update Vue component data
-      this.map.on('move', () => {
-        // set the vue instance's data.center to the results of the mapbox instance method for getting the center
-        this.center = this.map.getCenter()
-      })
-      this.map.on('zoom', () => {
-        // set the vue instance's data.zoom to the results of the mapbox instance method for getting the zoom
-        this.zoom = this.map.getZoom()
-      })
+      ]
+    }
     }
   }
-}
 </script>
-
-<style scoped>
-#map {
-  height: 400px;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  border: 1px solid darkgrey;
-}
-.text-container {
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  align-items: flex-start;
-  margin: 0 auto; /* center text container */
-}
-</style>
