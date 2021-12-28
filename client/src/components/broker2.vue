@@ -1,3 +1,7 @@
+<template>
+    <div>
+  </div>
+</template>
 <script>
 import mqtt from 'mqtt'
 
@@ -32,8 +36,15 @@ export default {
     }
   },
 
-  mounted: {
+  mounted (){
     // Create connection
+    this.createConnection()
+    // 订阅主题
+    //this.doSubscribe()
+  },
+
+  methods: {
+    //
     createConnection() {
       console.log('does it reach?')
       // Connect string, and specify the connection method used through protocol
@@ -43,15 +54,22 @@ export default {
       // mqtts encrypted TCP connection
       // wxs WeChat mini app connection
       // alis Alipay mini app connection
-      const { host, port, endpoint, ...options } = this.connection
-      const connectUrl = `ws://${host}:${port}${endpoint}`
+      const { host, port, ...options } = this.connection
+      const connectUrl = `ws://${host}:${port}`
       try {
         this.client = mqtt.connect(connectUrl, options)
       } catch (error) {
         console.log('mqtt.connect error', error)
       }
-      this.client.on('connect', () => {
-        console.log('Connection succeeded!')
+      this.client.on("connect", function() {
+        function subscribe(topic) {
+          client.subscribe(topic);
+          console.log("Subscribed to: " + topic);
+        }
+        function publish(topic, message) {
+          client.publish(topic, message, { qos: 1, retain:false });
+        }
+        subscribe(willMsgTopic);
       })
       this.client.on('error', error => {
         console.log('Connection failed', error)
@@ -61,7 +79,7 @@ export default {
         console.log(`Received message ${message} from topic ${topic}`)
       })
     },
-    // 订阅主题
+    //
     doSubscribe() {
       const { topic, qos } = this.subscription
       this.client.subscribe(topic, { qos }, (error, res) => {
@@ -73,10 +91,6 @@ export default {
         console.log('Subscribe to topics res', res)
       })
     },
-  },
-
-  methods: {
-    
     // 取消订阅
     doUnSubscribe() {
       const { topic } = this.subscription
