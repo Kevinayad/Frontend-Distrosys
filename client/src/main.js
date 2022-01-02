@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
 
 
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
@@ -19,6 +21,7 @@ Vue.use(VueGoogleMaps, {
   //installComponents: false
 });
 Vue.use(VueGeoLocation)
+Vue.use(ElementUI)
 
 
 // Make BootstrapVue available throughout your project
