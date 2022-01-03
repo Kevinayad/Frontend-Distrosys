@@ -23,6 +23,16 @@ This repository additionally contains technologies and/or parts of code licensed
 
 ## Get Started Guide
 
+ To display a map-view of Gothenburg at the front page
+
+## In order to see the map you need to install the Mapbox library using the bellow command: 
+
+``` npm i mapbox-gl @mapbox/mapbox-gl-geocoder axios --save ```
+
+### The Map component structure basically follows the following tutorial: 
+
+    https://www.smashingmagazine.com/2021/06/building-geocoding-app-vue-mapbox/
+
 ### Install
 
 1. npm install in the clients folder 
@@ -31,7 +41,7 @@ This repository additionally contains technologies and/or parts of code licensed
 
 ### Running the Frontend component
 
-1. NPM run serve 
+1. npm run serve 
 
 ## Development Team
 
