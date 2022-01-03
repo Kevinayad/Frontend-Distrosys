@@ -53,6 +53,7 @@
                     </div>
                 </div>
             </div>
+            <hr class="divider" />
         </section>
         <!-- Call to action-->
         <section class="page-section bg-white text-black" id="schedule">

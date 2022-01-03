@@ -160,23 +160,23 @@ export default {
   data() {
     return {
       connection: {
-        host: 'r2c46b52.eu-central-1.emqx.cloud',
+        host: 'broker.emqx.io',
         port: 8083,
         endpoint: '/mqtt',
         clean: true, // 保留会话
         connectTimeout: 4000, // 超时时间
         reconnectPeriod: 4000, // 重连时间间隔
         // 认证信息
-        clientId: 'emqx_cloudf7693719',
-        username: 'group12',
-        password: '12',
+        clientId: 'mqttjs_3be2c321',
+        username: 'emqx_test',
+        password: 'emqx_test',
       },
       subscription: {
-        topic: 'topic/map',
+        topic: 'topic/mqttx',
         qos: 0,
       },
       publish: {
-        topic: 'topic/map',
+        topic: 'topic/browser',
         qos: 0,
         payload: '{ "msg": "Hello, I am browser." }',
       },
