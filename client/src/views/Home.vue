@@ -158,7 +158,64 @@ export default {
     Map,
     Navbar,
   },
+  data() {
+      return {
+        connection: {
+        host: 'broker.emqx.io',
+        port: 8083,
+        endpoint: '/mqtt',
+        clean: true, // 保留会话
+        connectTimeout: 4000, // 超时时间
+        reconnectPeriod: 4000, // 重连时间间隔
+        // 认证信息
+        clientId: 'emqx_cloudf7693719',
+        username: 'group12',
+        password: '12',
+      },
+      subscription: {
+        topic: 'WillMsg12',
+        qos: 2,
+      }
+      }
+  },
   mounted () {
-  }
+      this.createConnection();
+  },
+  methods: {
+      createConnection() {
+      const { host, port, endpoint, ...options } = this.connection
+      const connectUrl = `ws://${host}:${port}${endpoint}`
+      try {
+        this.client = mqtt.connect(connectUrl, options)
+      } catch (error) {
+        console.log('mqtt.connect error', error)
+      }
+      this.client.on('connect', () => {
+        this.doSubscribe()
+        console.log('Connection succeeded!')
+      })
+      this.client.on('error', error => {
+        console.log('Connection failed', error)
+      })
+      this.client.on('message', (topic, message) => {
+        this.receiveNews = this.receiveNews.concat(message)
+        if(topic=='WillMsg12'){
+          window.alert(message)
+        }
+        console.log(`Received message ${message} from topic ${topic}`)
+      })
+    },
+    doSubscribe() {
+      const { topic, qos } = this.subscription
+      this.client.subscribe(topic, { qos }, (error, res) => {
+        if (error) {
+          console.log('Subscribe to topics error', error)
+          return
+        }
+        this.subscribeSuccess = true
+        console.log('Subscribe to topics res', res)
+      })
+    }
+  },
 }
 </script>
