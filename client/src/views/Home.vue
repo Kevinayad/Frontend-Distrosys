@@ -59,7 +59,7 @@
             <div class="container px-4 px-lg-5 text-center">
                 <h2 class="mt-0">Choose an available times</h2>                       
                     <Schedule/>
-                <a class="btn btn-primary btn-xl" href="#contact">Confirm</a>
+                <a class="btn btn-primary btn-xl" href="#contact" id="confirm" :disabled='isDisabled'>Confirm</a>
             </div>
         </section>
         <!-- Contact-->
@@ -146,6 +146,7 @@
 </template>
 
 <script>
+import mqtt from 'mqtt'
 import Map from '../components/map.vue'
 import Navbar from '../components/navbar.vue'
 import Schedule from '../components/schedule.vue'
@@ -198,9 +199,9 @@ export default {
         console.log('Connection failed', error)
       })
       this.client.on('message', (topic, message) => {
-        this.receiveNews = this.receiveNews.concat(message)
         if(topic=='WillMsg12'){
           window.alert(message)
+          document.getElementById("confirm").disabled = true;
         }
         console.log(`Received message ${message} from topic ${topic}`)
       })
