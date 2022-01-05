@@ -11,7 +11,7 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-lg-8 align-self-baseline">
                         <p class="text-white-75 mb-5"></p>
-                        <a class="btn btn-primary btn-xl" href="#schedule">Continue!</a>
+                        <button class="btn btn-primary btn-xl" @click="scrollMeTo('schedule')" :disabled="check" id="continue">{{connected}}</button>
                     </div>
                 </div>
             </div>
@@ -55,15 +55,15 @@
             <hr class="divider" />
         </section>
         <!-- Call to action-->
-        <section class="page-section bg-white text-black" id="schedule">
+        <section class="page-section bg-white text-black" ref="schedule">
             <div class="container px-4 px-lg-5 text-center">
-                <h2 class="mt-0">Choose an available times</h2>                       
+                <h2 class="mt-0">Choose an available time</h2>                       
                     <Schedule/>
-                <a class="btn btn-primary btn-xl" href="#contact" id="confirm" :disabled='isDisabled'>Confirm</a>
+                <button class="btn btn-primary btn-xl" @click="scrollMeTo('contact')" id="confirm" :disabled="check">{{confirmed}}</button>
             </div>
         </section>
         <!-- Contact-->
-        <section class="page-section" id="contact">
+        <section class="page-section" ref="contact">
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-lg-8 col-xl-6 text-center">
@@ -176,10 +176,13 @@ export default {
       subscription: {
         topic: 'WillMsg12',
         qos: 2,
-      }
+      },
+      check: false,
+      connected: 'Continue',
+      confirmed: 'Confirm'
       }
   },
-  mounted () {
+  mounted() {
       this.createConnection();
   },
   methods: {
@@ -200,8 +203,10 @@ export default {
       })
       this.client.on('message', (topic, message) => {
         if(topic=='WillMsg12'){
-          window.alert(message)
-          document.getElementById("confirm").disabled = true;
+          window.alert(message);
+          this.check = true;
+          this.connected = 'No connection';
+          this.confirmed = 'Unable to confirm time';
         }
         console.log(`Received message ${message} from topic ${topic}`)
       })
@@ -216,6 +221,12 @@ export default {
         this.subscribeSuccess = true
         console.log('Subscribe to topics res', res)
       })
+    },
+    scrollMeTo(refName) {
+    var element = this.$refs[refName];
+    var top = element.offsetTop;
+
+    window.scrollTo(0, top);
     }
   },
 }
