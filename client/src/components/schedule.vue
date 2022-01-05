@@ -15,7 +15,9 @@
 </template>
 
 <script>
+import mqtt from "mqtt";
 import VueMeetingSelector from 'vue-meeting-selector';
+//TODO: remove once connect schedule to backend is completed
 import data from '../../public/assets/data.json'
 
 export default {
@@ -30,6 +32,22 @@ export default {
       meeting: null,
       loading: true,
       nbDaysToDisplay: 5,
+      clinic1: null,
+      connection: {
+        host: 'broker.emqx.io',
+        port: 8083,
+        endpoint: '/mqtt',
+        clean: true,
+        connectTimeout: 4000,
+        reconnectPeriod: 4000,
+        clientId: 'emqx_cloudf7693719',
+        username: 'group12',
+        password: '12',
+      },
+      subscription: {
+        topic: 'Backend',
+        qos: 2,
+      },
     };
   },
   computed: {
@@ -39,6 +57,9 @@ export default {
         tabLoading: 'loading-div',
       };
     },
+  },
+  mounted() {
+      this.createConnection();
   },
   methods: {
     // @click on button-right
@@ -64,13 +85,50 @@ export default {
       // hide loading
       this.loading = false;
     },
+    createConnection() {
+      const { host, port, endpoint, ...options } = this.connection
+      const connectUrl = `ws://${host}:${port}${endpoint}`
+      try {
+        this.client = mqtt.connect(connectUrl, options)
+      } catch (error) {
+        console.log('mqtt.connect error', error)
+      }
+      this.client.on('connect', () => {
+        this.doSubscribe()
+        console.log('Connection succeeded!')
+      })
+      this.client.on('error', error => {
+        console.log('Connection failed', error)
+      })
+      this.client.on('message', (topic, message) => {
+        if(topic=='Backend'){
+          //load schedule TODO: remove clinic1
+          this.clinic1 = (JSON.parse(message))['Clinic1']
+          this.meetingsDays= this.clinic1;
+          this.loading = false;
+          console.log(`Received message ${message} from topic ${topic}`)
+        }
+      })
+    },
+    doSubscribe() {
+      const { topic, qos } = this.subscription
+      this.client.subscribe(topic, { qos }, (error, res) => {
+        if (error) {
+          console.log('Subscribe to topics error', error)
+          return
+        }
+        this.subscribeSuccess = true
+        console.log('Subscribe to topics res', res)
+      })
+    },
   },
+  //TODO: remove once connect schedule to backend is completed
   async created() {
     // get meetings
-    this.meetingsDays= data;
+    //this.meetingsDays= this.clinic1;
     //this.meetingsDays = await getNewDates(this.date);
     // hide loading
-    this.loading = false;
+    //this.loading = false;
   },
 };
 </script>
