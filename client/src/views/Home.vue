@@ -4,14 +4,30 @@
         <section class="page-section bg-white" id="about">
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
-                   <Map/>
+                   <h1> Your coordinates:</h1>
+                   <p>{{ coordinates.lat}} Latitude, {{coordinates.lng}} Longitude</p>
+                    <!-- <GmapAutocomplete
+                    @place_changed='setPlace'
+                    /> -->
+                    <button @click= "showClinics">Show clinics</button>
+    <gmap-map
+        :center= "center"
+        :zoom= "7"
+        style= "width:100%;  height:600px;">
+        <gmap-marker
+          :key="index"
+          v-for="(gmp, index) in dentists"
+          :position="gmp"
+          @click="center=gmp"
+        ></gmap-marker>
+    </gmap-map>
                    <hr class="divider" />
                    
                 </div>
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-lg-8 align-self-baseline">
                         <p class="text-white-75 mb-5"></p>
-                        <button class="btn btn-primary btn-xl" @click="scrollMeTo('schedule')" :disabled="check" id="continue">{{connected}}</button>
+                        <button class="btn btn-primary btn-xl" @click="scrollMeTo('schedule'); doPublish('Frontend', 'Clinic1')" :disabled="check" id="continue">{{connected}}</button>
                     </div>
                 </div>
             </div>
@@ -58,7 +74,20 @@
         <section class="page-section bg-white text-black" ref="schedule">
             <div class="container px-4 px-lg-5 text-center">
                 <h2 class="mt-0">Choose an available time</h2>                       
-                    <Schedule/>
+                <div class="simple-example">
+    <vue-meeting-selector
+      class="simple-example__meeting-selector"
+      v-model="meeting"
+      :date="date"
+      :loading="loading"
+      :class-names="classNames"
+      :meetings-days="meetingsDays"
+      @next-date="nextDate"
+      @previous-date="previousDate"
+    />
+    <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
+  </div>
+    <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
                 <button class="btn btn-primary btn-xl" @click="scrollMeTo('contact')" id="confirm" :disabled="check">{{confirmed}}</button>
             </div>
         </section>
@@ -103,8 +132,8 @@
                             </div>
                             <!-- Message input-->
                             <div class="form-floating mb-3">
-                                <textarea class="form-control" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
-                                <label for="message">Additional information about the reason you want to meet the dentist (optional)</label>
+                                <textarea class="form-control" id="form-message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
+                                <label for="form-message">Additional information about the reason you want to meet the dentist (optional)</label>
                                 <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
                             </div>
                             <!-- Submit success message-->
@@ -147,45 +176,84 @@
 
 <script>
 import mqtt from 'mqtt'
-import Map from '../components/map.vue'
+//import Map from '../components/map.vue'
 import Navbar from '../components/navbar.vue'
-import Schedule from '../components/schedule.vue'
+import VueMeetingSelector from 'vue-meeting-selector';
+//import Schedule from '../components/schedule.vue'
 import '../../public/css/styles.css'
+const currentLocation = {lat: 59.8757264, lng: 17.65862};
 
 export default {
   name: 'Home',
   components: {
-    Schedule,
-    Map,
+    //Schedule,
+    //Map,
     Navbar,
+    VueMeetingSelector
   },
   data() {
       return {
+          //MQTT
         connection: {
         host: 'broker.emqx.io',
         port: 8083,
         endpoint: '/mqtt',
-        clean: true, // 保留会话
-        connectTimeout: 4000, // 超时时间
-        reconnectPeriod: 4000, // 重连时间间隔
-        // 认证信息
+        clean: true,
+        connectTimeout: 4000,
+        reconnectPeriod: 4000,
         clientId: 'emqx_cloudf7693719',
         username: 'group12',
         password: '12',
       },
-      subscription: {
+      subscriptionWillMsg: {
         topic: 'WillMsg12',
+        qos: 2,
+      },
+      subscriptionBackend: {
+        topic: 'Backend',
+        qos: 2,
+      },
+      subscriptionMap: {
+        topic: 'Map',
         qos: 2,
       },
       check: false,
       connected: 'Continue',
-      confirmed: 'Confirm'
+      confirmed: 'Confirm',
+      //Map
+      coordinates: {
+           lat: 0, 
+           lng: 0
+         },
+    center: { lat: 57.70635929297478, lng: 11.965216102046611},
+         currentPlace: null,
+         dentists: [],
+         markers: [],
+         places: [],
+        //Schedule 
+         date: new Date(),
+      meetingsDays: [],
+      meeting: null,
+      loading: true,
+      nbDaysToDisplay: 5,
+      selectedClinic: null,
       }
   },
+  computed: {
+    // because of line-height, font-type you might need to change top value
+    classNames() {
+      return {
+        tabLoading: 'loading-div',
+      };
+    },
+  },
   mounted() {
+      this.geolocate();
       this.createConnection();
+      this.getClinics();
   },
   methods: {
+      //MQTT
       createConnection() {
       const { host, port, endpoint, ...options } = this.connection
       const connectUrl = `ws://${host}:${port}${endpoint}`
@@ -208,11 +276,35 @@ export default {
           this.connected = 'No connection';
           this.confirmed = 'Unable to confirm time';
         }
+        else if(topic == 'Backend'){
+          //load schedule
+          console.log(this.selectedClinic);
+          this.meetingsDays= (JSON.parse(message))[this.selectedClinic];
+          this.loading = false;
+        }
         console.log(`Received message ${message} from topic ${topic}`)
       })
     },
     doSubscribe() {
-      const { topic, qos } = this.subscription
+      var { topic, qos } = this.subscriptionWillMsg
+      this.client.subscribe(topic, { qos }, (error, res) => {
+        if (error) {
+          console.log('Subscribe to topics error', error)
+          return
+        }
+        this.subscribeSuccess = true
+        console.log('Subscribe to topics res', res)
+      })
+      var { topic, qos } = this.subscriptionMap
+      this.client.subscribe(topic, { qos }, (error, res) => {
+        if (error) {
+          console.log('Subscribe to topics error', error)
+          return
+        }
+        this.subscribeSuccess = true
+        console.log('Subscribe to topics res', res)
+      })
+      var { topic, qos } = this.subscriptionBackend
       this.client.subscribe(topic, { qos }, (error, res) => {
         if (error) {
           console.log('Subscribe to topics error', error)
@@ -222,12 +314,128 @@ export default {
         console.log('Subscribe to topics res', res)
       })
     },
+    doUnSubscribe() {
+  const { topic } = this.subscription
+  this.client.unsubscribe(topic, error => {
+    if (error) {
+      console.log('Unsubscribe error', error)
+    }
+  })
+},
+    doPublish(topic, payload) {
+      this.client.publish(topic, payload, 2, error => {
+          //TODO: check if movable
+          this.selectedClinic = payload
+        if (error) {
+          console.log('Publish error', error)
+        }
+      })
+    },
+    destroyConnection() {
+  if (this.client.connected) {
+    try {
+      this.client.end()
+      this.client = {
+        connected: false,
+      }
+      console.log('Successfully disconnected!')
+    } catch (error) {
+      console.log('Disconnect failed', error.toString())
+    }
+  }
+},
+    //Map
+    setPlace(place) {
+      this.currentPlace = place;
+    },
+    geolocate: function() {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.center = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+      });
+      this.dentists = [
+          {
+              lat: 57.707619,
+              lng: 11.969388,
+              label: 'Your Dentist'
+          },
+          {
+              lat: 57.685255,
+              lng: 11.942625,
+              label: '"Tooth Fairy Dentist'
+          },
+          {
+              lat: 57.709872,
+              lng: 11.940386,
+              label: 'The Crown'
+          },
+          {
+              lat: 57.694723,
+              lng: 11.991153,
+              label: 'Lisebergs Dentists'
+          }
+      ];
+    },
+    showClinics(){
+      this.markers= [
+        {
+          position: currentLocation,
+      }
+      ]
+    },
+    getClinics() {
+      this.doSubscribe("frontend/allClinics");
+      console.log("getting all clinics");
+      this.client.on("message", (topic, message) => {
+        if (topic == "allClinics") {
+          var string = message.toString();
+          var json = JSON.parse(string);
+          this.clinics = json;
+          console.log(json);
+        }
+      });
+    },
+    //Schedule
+    // @click on button-right
+    async nextDate() {
+      // display loading
+      this.loading = true;
+      // calcul new Date and change actual
+      this.date = newDate;
+      // get meetings with async function
+      this.meetingsDays = await getNewDates(this.date);
+      // hide loading
+      this.loading = false;
+    },
+    // @click on button-left
+    async previousDate() {
+      // display loading
+      this.loading = true;
+      // calcul new Date and change actual
+      // you might need to handle the fact you can't go in past
+      this.date = newDate;
+      // get meetings with async function
+      this.meetingsDays = await getNewDates(this.date);
+      // hide loading
+      this.loading = false;
+    },
+    //Other
     scrollMeTo(refName) {
     var element = this.$refs[refName];
     var top = element.offsetTop;
-
     window.scrollTo(0, top);
-    }
+    },
   },
 }
 </script>
+
+<style scoped lang="scss">
+  .simple-example {
+   margin-top: 5em;
+   margin-left: 2em;
+    margin-right: 2em;
+   margin-bottom: 5em;
+   }
+</style>
