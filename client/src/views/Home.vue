@@ -11,7 +11,7 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-lg-8 align-self-baseline">
                         <p class="text-white-75 mb-5"></p>
-                        <a class="btn btn-primary btn-xl" href="#schedule">Continue!</a>
+                        <button class="btn btn-primary btn-xl" @click="scrollMeTo('schedule')" :disabled="check" id="continue">{{connected}}</button>
                     </div>
                 </div>
             </div>
@@ -55,15 +55,15 @@
             <hr class="divider" />
         </section>
         <!-- Call to action-->
-        <section class="page-section bg-white text-black" id="schedule">
+        <section class="page-section bg-white text-black" ref="schedule">
             <div class="container px-4 px-lg-5 text-center">
-                <h2 class="mt-0">Choose an available times</h2>                       
+                <h2 class="mt-0">Choose an available time</h2>                       
                     <Schedule/>
-                <a class="btn btn-primary btn-xl" href="#contact">Confirm</a>
+                <button class="btn btn-primary btn-xl" @click="scrollMeTo('contact')" id="confirm" :disabled="check">{{confirmed}}</button>
             </div>
         </section>
         <!-- Contact-->
-        <section class="page-section" id="contact">
+        <section class="page-section" ref="contact">
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-lg-8 col-xl-6 text-center">
@@ -146,6 +146,7 @@
 </template>
 
 <script>
+import mqtt from 'mqtt'
 import Map from '../components/map.vue'
 import Navbar from '../components/navbar.vue'
 import Schedule from '../components/schedule.vue'
@@ -156,7 +157,77 @@ export default {
   components: {
     Schedule,
     Map,
-    Navbar
-  }
+    Navbar,
+  },
+  data() {
+      return {
+        connection: {
+        host: 'broker.emqx.io',
+        port: 8083,
+        endpoint: '/mqtt',
+        clean: true, // 保留会话
+        connectTimeout: 4000, // 超时时间
+        reconnectPeriod: 4000, // 重连时间间隔
+        // 认证信息
+        clientId: 'emqx_cloudf7693719',
+        username: 'group12',
+        password: '12',
+      },
+      subscription: {
+        topic: 'WillMsg12',
+        qos: 2,
+      },
+      check: false,
+      connected: 'Continue',
+      confirmed: 'Confirm'
+      }
+  },
+  mounted() {
+      this.createConnection();
+  },
+  methods: {
+      createConnection() {
+      const { host, port, endpoint, ...options } = this.connection
+      const connectUrl = `ws://${host}:${port}${endpoint}`
+      try {
+        this.client = mqtt.connect(connectUrl, options)
+      } catch (error) {
+        console.log('mqtt.connect error', error)
+      }
+      this.client.on('connect', () => {
+        this.doSubscribe()
+        console.log('Connection succeeded!')
+      })
+      this.client.on('error', error => {
+        console.log('Connection failed', error)
+      })
+      this.client.on('message', (topic, message) => {
+        if(topic=='WillMsg12'){
+          window.alert(message);
+          this.check = true;
+          this.connected = 'No connection';
+          this.confirmed = 'Unable to confirm time';
+        }
+        console.log(`Received message ${message} from topic ${topic}`)
+      })
+    },
+    doSubscribe() {
+      const { topic, qos } = this.subscription
+      this.client.subscribe(topic, { qos }, (error, res) => {
+        if (error) {
+          console.log('Subscribe to topics error', error)
+          return
+        }
+        this.subscribeSuccess = true
+        console.log('Subscribe to topics res', res)
+      })
+    },
+    scrollMeTo(refName) {
+    var element = this.$refs[refName];
+    var top = element.offsetTop;
+
+    window.scrollTo(0, top);
+    }
+  },
 }
 </script>

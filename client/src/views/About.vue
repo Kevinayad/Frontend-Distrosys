@@ -160,7 +160,7 @@ export default {
   data() {
     return {
       connection: {
-        host: 'r2c46b52.eu-central-1.emqx.cloud',
+        host: 'broker.emqx.io',
         port: 8083,
         endpoint: '/mqtt',
         clean: true, // 保留会话
@@ -217,6 +217,9 @@ export default {
       })
       this.client.on('message', (topic, message) => {
         this.receiveNews = this.receiveNews.concat(message)
+        if(topic=='WillMsg12'){
+          window.alert(message)
+        }
         console.log(`Received message ${message} from topic ${topic}`)
       })
     },
