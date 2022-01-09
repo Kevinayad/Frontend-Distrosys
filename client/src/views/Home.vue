@@ -277,10 +277,17 @@ export default {
           this.confirmed = 'Unable to confirm time';
         }
         else if(topic == 'Backend'){
-          //load schedule
-          console.log(this.selectedClinic);
-          this.meetingsDays= (JSON.parse(message))[this.selectedClinic];
-          this.loading = false;
+          if (message == "bookFail") {
+            window.alert("Appointment could not be made");
+          } else if (message == "bookSuccess") {
+              window.alert("Appointment was successfully booked");
+          } else {
+            // load schedule
+            console.log(this.selectedClinic);
+            this.meetingsDays= (JSON.parse(message))[this.selectedClinic];
+            this.loading = false;
+          }
+
         }
         console.log(`Received message ${message} from topic ${topic}`)
       })
