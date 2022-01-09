@@ -176,18 +176,14 @@
 
 <script>
 import mqtt from 'mqtt'
-//import Map from '../components/map.vue'
 import Navbar from '../components/navbar.vue'
 import VueMeetingSelector from 'vue-meeting-selector';
-//import Schedule from '../components/schedule.vue'
 import '../../public/css/styles.css'
 const currentLocation = {lat: 59.8757264, lng: 17.65862};
 
 export default {
   name: 'Home',
   components: {
-    //Schedule,
-    //Map,
     Navbar,
     VueMeetingSelector
   },
