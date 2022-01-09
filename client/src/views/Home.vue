@@ -325,6 +325,8 @@ export default {
     doPublish(topic, payload) {
       this.client.publish(topic, payload, 2, error => {
           //TODO: check if movable
+          //replace with this.selectedClinic = 'Clinic1' to test schedule-fixes branch.
+          //and replace the message on line 30 'Clinic1' to 'GetSchedule'.
           this.selectedClinic = payload
         if (error) {
           console.log('Publish error', error)
