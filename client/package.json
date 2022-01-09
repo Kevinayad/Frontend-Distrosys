@@ -23,6 +23,7 @@
     "vue-browser-geolocation": "^1.8.0",
     "vue-mapbox": "^0.4.1",
     "vue-meeting-selector": "^1.1.1",
+    "vue-mqtt": "^2.0.3",
     "vue-router": "^3.2.0",
     "vuejs-google-maps": "^0.2.0",
     "vuex": "^3.6.2"
