@@ -4,31 +4,29 @@
         <section class="page-section bg-white" id="about">
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
-                   <h1> Your coordinates:</h1>
-                   <p>{{ coordinates.lat}} Latitude, {{coordinates.lng}} Longitude</p>
-                    <!-- <GmapAutocomplete
-                    @place_changed='setPlace'
-                    /> -->
-                    <button @click= "showClinics">Show clinics</button>
-    <gmap-map
-        :center= "center"
-        :zoom= "7"
-        style= "width:100%;  height:600px;">
-        <gmap-marker
-          :key="index"
-          v-for="(gmp, index) in dentists"
-          :position="gmp"
-          @click="center=gmp"
-        ></gmap-marker>
-    </gmap-map>
-                   <hr class="divider" />
-                   
-                </div>
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-8 align-self-baseline">
-                        <p class="text-white-75 mb-5"></p>
-                        <button class="btn btn-primary btn-xl" @click="scrollMeTo('schedule'); doPublish('Frontend', 'Clinic1')" :disabled="check" id="continue">{{connected}}</button>
-                    </div>
+                    <gmap-map
+                        :center= "center"
+                        :zoom= "10"
+                        style= "width:100%;  height:600px;"
+                        v-bind="infoOptions">
+                        <gmap-marker
+                          :key="index"
+                          v-for="(m, index) in markers"
+                          :position="m.position"   
+                          @click ="getSchedule(index++)"                                     
+                          @mouseover="openWindow(m, index)" 
+                          @dblclick="scrollMeTo('schedule')"
+                        ></gmap-marker>
+                        <gmap-info-window 
+                          @closeclick="window_open=false" 
+                          :opened="window_open" 
+                          :position="infoPosition"
+                          :options="infoOptions"
+                      >
+                          
+                      </gmap-info-window> 
+                    </gmap-map>
+                    <hr class="divider" />
                 </div>
             </div>
         </section>
@@ -75,19 +73,18 @@
             <div class="container px-4 px-lg-5 text-center">
                 <h2 class="mt-0">Choose an available time</h2>                       
                 <div class="simple-example">
-    <vue-meeting-selector
-      class="simple-example__meeting-selector"
-      v-model="meeting"
-      :date="date"
-      :loading="loading"
-      :class-names="classNames"
-      :meetings-days="meetingsDays"
-      @next-date="nextDate"
-      @previous-date="previousDate"
-    />
-    <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
-  </div>
-    <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
+                    <vue-meeting-selector
+                      class="simple-example__meeting-selector"
+                      v-model="meeting"
+                      :date="date"
+                      :loading="loading"
+                      :class-names="classNames"
+                      :meetings-days="meetingsDays"
+                      @next-date="nextDate"
+                      @previous-date="previousDate"
+                    />
+                </div>
+                <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
                 <button class="btn btn-primary btn-xl" @click="scrollMeTo('contact')" id="confirm" :disabled="check">{{confirmed}}</button>
             </div>
         </section>
@@ -102,61 +99,18 @@
                     </div>
                 </div>
                 <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
-                    <div class="col-lg-6">
-                        <!-- * * * * * * * * * * * * * * *-->
-                        <!-- * * SB Forms Contact Form * *-->
-                        <!-- * * * * * * * * * * * * * * *-->
-                        <!-- This form is pre-integrated with SB Forms.-->
-                        <!-- To make this form functional, sign up at-->
-                        <!-- https://startbootstrap.com/solution/contact-forms-->
-                        <!-- to get an API token!-->
-                        <form id="contactForm" data-sb-form-api-token="API_TOKEN">
-                            <!-- Name input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
-                                <label for="name">Full name</label>
-                                <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
-                            </div>
-                            <!-- Email address input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
-                                <label for="email">Email address</label>
-                                <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
-                                <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
-                            </div>
-                            <!-- Phone number input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
-                                <label for="phone">Phone number</label>
-                                <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
-                            </div>
-                            <!-- Message input-->
-                            <div class="form-floating mb-3">
-                                <textarea class="form-control" id="form-message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
-                                <label for="form-message">Additional information about the reason you want to meet the dentist (optional)</label>
-                                <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
-                            </div>
-                            <!-- Submit success message-->
-                            <!---->
-                            <!-- This is what your users will see when the form-->
-                            <!-- has successfully submitted-->
-                            <div class="d-none" id="submitSuccessMessage">
-                                <div class="text-center mb-3">
-                                    <div class="fw-bolder">Form submission successful!</div>
-                                    To activate this form, sign up at
-                                    <br />
-                                    <a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
-                                </div>
-                            </div>
-                            <!-- Submit error message-->
-                            <!---->
-                            <!-- This is what your users will see when there is-->
-                            <!-- an error submitting the form-->
-                            <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
-                            <!-- Submit Button-->
-                            <div class="d-grid"><button class="btn btn-primary btn-xl disabled" id="submitButton" type="submit">Submit</button></div>
-                        </form>
+                  <div class="col-lg-6">
+                    <form id="contactForm">
+                    <b-form-input placeholder="Name" list="input-list" id="input-with-list"></b-form-input>
+                    <br>
+                    <b-form-input placeholder="Phone number" list="input-list" id="input-with-list"></b-form-input>
+                    <br>
+                    <div style="text-align:center">
+                      <button class="btn btn-primary btn-xl" :disabled="check" @click="sendForm()">{{confirmed}}</button>
+                      <br><br><br>
                     </div>
+                    </form>
+                  </div>  
                 </div>
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-lg-4 text-center mb-5 mb-lg-0">
@@ -179,7 +133,7 @@ import mqtt from 'mqtt'
 import Navbar from '../components/navbar.vue'
 import VueMeetingSelector from 'vue-meeting-selector';
 import '../../public/css/styles.css'
-const currentLocation = {lat: 59.8757264, lng: 17.65862};
+import { dentists } from '../../public/assets/dentistRegistry.json'
 
 export default {
   name: 'Home',
@@ -217,22 +171,34 @@ export default {
       connected: 'Continue',
       confirmed: 'Confirm',
       //Map
+      infoPosition: null,
+      infoContent: null,
+      infoOptions: {
+        pixelOffset: {
+          width: 0,
+          height: -35
+        },
+        maxWidth: 10000,
+        content: null
+      },
+      window_open: false,
+      currentMidx: null, 
       coordinates: {
            lat: 0, 
            lng: 0
          },
-    center: { lat: 57.70635929297478, lng: 11.965216102046611},
+      center: { lat: 57.70635929297478, lng: 11.965216102046611},
          currentPlace: null,
          dentists: [],
-         markers: [],
          places: [],
         //Schedule 
          date: new Date(),
       meetingsDays: [],
-      meeting: null,
+      meeting: null,       //<-- Selected date and time
       loading: true,
       nbDaysToDisplay: 5,
-      selectedClinic: null,
+      selectedClinic: 0,  //<-- Data type: Number
+      Clinic_ID: 'Clinic'
       }
   },
   computed: {
@@ -242,6 +208,29 @@ export default {
         tabLoading: 'loading-div',
       };
     },
+    markers(){
+      return dentists.map(({
+         name, coordinate: {longitude, latitude}, openinghours: {monday, tuesday, wednesday,thursday, friday}, address})=> ({
+        name: {
+          name,
+          color: '#333',
+          fontSize: '10px'
+        },
+        address,
+        position: {
+          lng: longitude,
+          lat: latitude          
+        },
+        openinghours:{
+          monday,
+          tuesday, 
+          wednesday,
+          thursday,
+          friday
+        }
+      })
+      );
+    }
   },
   mounted() {
       this.geolocate();
@@ -279,8 +268,7 @@ export default {
               window.alert("Appointment was successfully booked");
           } else {
             // load schedule
-            console.log(this.selectedClinic);
-            this.meetingsDays= (JSON.parse(message))[this.selectedClinic];
+            this.meetingsDays= (JSON.parse(message))[this.Clinic_ID + this.selectedClinic];
             this.loading = false;
           }
 
@@ -327,10 +315,6 @@ export default {
 },
     doPublish(topic, payload) {
       this.client.publish(topic, payload, 2, error => {
-          //TODO: check if movable
-          //replace with this.selectedClinic = 'Clinic1' to test schedule-fixes branch.
-          //and replace the message on line 30 'Clinic1' to 'GetSchedule'.
-          this.selectedClinic = payload
         if (error) {
           console.log('Publish error', error)
         }
@@ -350,6 +334,42 @@ export default {
   }
 },
     //Map
+        getPosition: function(marker) {  
+      return {
+        lat: parseFloat(marker.position.lat),
+        lng: parseFloat(marker.position.lng)
+      }
+    },
+    openWindow(marker, idx) {
+      
+      //this.window_open = true;    
+
+      this.infoPosition = this.getPosition(marker);
+
+      this.infoOptions.content = '<div id="iw" class="iw-container">'+                                    
+                                    '<div class="iw-body">'+                                                             
+                                        '<h5 class="iw-address">'+
+                                            marker.name.name+
+                                        '</h5>'+
+                                        '<h6 class="iw-address">'+
+                                           'Address: '+ marker.address+
+                                        '</h6>'+ 
+                                        '<h8 class="iw-address">'+' Monday: '+ marker.openinghours.monday + ' || '+'</h8>'+
+                                        '<h7 class="iw-address">'+ 'Tuesday: '+ marker.openinghours.tuesday+' || '+'</h7>'+
+                                        '<h8 class="iw-address">'+ 'Wednsday: '+ marker.openinghours.wednesday+ ' || '+ '</h8>'+
+                                        '<h8 class="iw-address">'+ 'Thursday: '+ marker.openinghours.thursday+ ' || '+'</h8>'+
+                                        '<h8 class="iw-address">'+ 'Friday: '+ marker.openinghours.friday  + '</h8>'+
+                                    '</div>'                                                            
+                                 '</div>';
+
+      if (this.currentMidx === idx) {
+        this.window_open = !this.window_open;
+      }
+      else {
+        this.window_open = true;
+        this.currentMidx = idx;
+      }
+    },
     setPlace(place) {
       this.currentPlace = place;
     },
@@ -360,35 +380,6 @@ export default {
           lng: position.coords.longitude
         };
       });
-      this.dentists = [
-          {
-              lat: 57.707619,
-              lng: 11.969388,
-              label: 'Your Dentist'
-          },
-          {
-              lat: 57.685255,
-              lng: 11.942625,
-              label: '"Tooth Fairy Dentist'
-          },
-          {
-              lat: 57.709872,
-              lng: 11.940386,
-              label: 'The Crown'
-          },
-          {
-              lat: 57.694723,
-              lng: 11.991153,
-              label: 'Lisebergs Dentists'
-          }
-      ];
-    },
-    showClinics(){
-      this.markers= [
-        {
-          position: currentLocation,
-      }
-      ]
     },
     getClinics() {
       this.doSubscribe("frontend/allClinics");
@@ -426,12 +417,25 @@ export default {
       // hide loading
       this.loading = false;
     },
+    getSchedule(clinicNumber){
+      this.selectedClinic = clinicNumber
+      this.doPublish('Frontend/schedule',  this.Clinic_ID+this.selectedClinic);
+    },
     //Other
     scrollMeTo(refName) {
     var element = this.$refs[refName];
     var top = element.offsetTop;
     window.scrollTo(0, top);
     },
+    sendForm(){
+      if(this.selectedClinic == null || this.meeting == null){
+        window.alert('Please select a clinic and a time to confirm your booking');
+      } else {
+        var bookingRequestData = {'dentistid': this.selectedClinic, 'date': this.meeting}
+        this.doPublish("Frontend/bookingform", JSON.stringify(bookingRequestData))
+      }
+    }
+
   },
 }
 </script>

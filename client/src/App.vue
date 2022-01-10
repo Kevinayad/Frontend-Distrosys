@@ -6,7 +6,7 @@
         id="mainNav"
       >
         <div class="container px-4 px-lg-5">
-          <a class="navbar-brand" href="#page-top">Logo goes here</a>
+          <a class="navbar-brand" href="#page-top">Dentistimo</h4> </a>
           <button
             class="navbar-toggler navbar-toggler-right"
             type="button"
@@ -20,12 +20,12 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ms-auto my-2 my-lg-0">
-              <li class="nav-item"><router-link to="/">Home</router-link></li>
+              <li class="nav-item"><router-link to="/"> Home &nbsp; &nbsp; &nbsp; </router-link></li>
               <li class="nav-item">
-                <a class="nav-link" href="#services">Services</a>
+                <a class="nav-item" href="#services">  Services &nbsp; &nbsp; &nbsp; </a>
               </li>
               <li class="nav-item">
-                <router-link to="/about">About</router-link>
+                <router-link to="/about">  About</router-link>
               </li>
             </ul>
           </div>
@@ -45,8 +45,8 @@
           "
         >
           <div class="col-lg-8 align-self-end">
-            <h1 class="text-white font-weight-bold">
-              Book your dentist appointment by clicking the button
+            <h1 class="text-black font-weight-bold">
+              Choose your clinic from the map 
             </h1>
             <hr class="divider" />
           </div>
