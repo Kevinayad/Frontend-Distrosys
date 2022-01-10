@@ -12,8 +12,8 @@
                         <gmap-marker
                           :key="index"
                           v-for="(m, index) in markers"
-                          :position="m.position"              
-                          @click ="getSchedule(index++)"
+                          :position="m.position"   
+                          @click ="getSchedule(index++)"                                     
                           @mouseover="openWindow(m, index)" 
                           @dblclick="scrollMeTo('schedule')"
                         ></gmap-marker>
@@ -197,7 +197,8 @@ export default {
       meeting: null,       //<-- Selected date and time
       loading: true,
       nbDaysToDisplay: 5,
-      selectedClinic: null,  //<-- Data type: Number
+      selectedClinic: 0,  //<-- Data type: Number
+      Clinic_ID: 'Clinic'
       }
   },
   computed: {
@@ -267,7 +268,7 @@ export default {
               window.alert("Appointment was successfully booked");
           } else {
             // load schedule
-            this.meetingsDays= (JSON.parse(message))['Clinic' + this.selectedClinic];
+            this.meetingsDays= (JSON.parse(message))[this.Clinic_ID + this.selectedClinic];
             this.loading = false;
           }
 
@@ -418,7 +419,7 @@ export default {
     },
     getSchedule(clinicNumber){
       this.selectedClinic = clinicNumber
-      this.doPublish('Frontend/schedule', this.selectedClinic);
+      this.doPublish('Frontend/schedule',  this.Clinic_ID+this.selectedClinic);
     },
     //Other
     scrollMeTo(refName) {
