@@ -4,18 +4,15 @@
         <section class="page-section bg-white" id="about">
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
-                   <h1> Your coordinates:</h1>
-                   <p>{{ coordinates.lat}} Latitude, {{coordinates.lng}} Longitude</p>
                     <gmap-map
                         :center= "center"
-                        :zoom= "7"
+                        :zoom= "10"
                         style= "width:100%;  height:600px;"
-                        v-bind="options">
+                        v-bind="infoOptions">
                         <gmap-marker
                           :key="index"
                           v-for="(m, index) in markers"
-                          :position="m.position"
-                          :label="m.label"
+                          :position="m.position"              
                           @click ="doPublish('Frontend', Clinic_ID+index++)"
                           @mouseover="openWindow(m, index)" 
                         ></gmap-marker>
@@ -30,12 +27,6 @@
                     </gmap-map>
                     <hr class="divider" />
                    
-                </div>
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-8 align-self-baseline">
-                        <p class="text-white-75 mb-5"></p>
-                        <button class="btn btn-primary btn-xl" @click="scrollMeTo('schedule'); doPublish('Frontend', 'Clinic1')" :disabled="check" id="continue">{{connected}}</button>
-                    </div>
                 </div>
             </div>
         </section>
