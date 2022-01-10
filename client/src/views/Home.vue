@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <Nav/>
             <!-- About-->
         <section class="page-section bg-white" id="about">
             <div class="container px-4 px-lg-5">
@@ -121,7 +122,7 @@
             </div>
         </section>
         <!-- Footer-->
-        <footer class="bg-light py-5">
+        <footer class="bg-light py-5" id="footer">
             <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2021 - Group 12</div></div>
         </footer>
 

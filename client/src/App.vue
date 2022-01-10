@@ -6,7 +6,7 @@
         id="mainNav"
       >
         <div class="container px-4 px-lg-5">
-          <a class="navbar-brand" href="#page-top">Dentistimo</h4> </a>
+          <a class="navbar-brand" href="#page-top">Dentistimo </a>
           <button
             class="navbar-toggler navbar-toggler-right"
             type="button"
@@ -25,7 +25,7 @@
                 <a class="nav-item" href="#services">  Services &nbsp; &nbsp; &nbsp; </a>
               </li>
               <li class="nav-item">
-                <router-link to="/about">  About</router-link>
+                <a href="#footer">  Contact</a>
               </li>
             </ul>
           </div>

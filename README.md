@@ -22,11 +22,17 @@ This repository additionally contains technologies and/or parts of code licensed
 * MIT License
 * EPL/EDL license
 
+### Prerequisite 
+
+* Add .env file with the environment variable for google map with the following format: 
+ ``` VUE_APP_MAP_ACCESS_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXX ```
+
 ### Install
 
-1. npm install in the clients folder 
-2. npm install --save vue
-3. npm install --save vue-browser-geolocation vue2-google-maps
+ In the clients folder:
+1. ``` npm install ```
+2. ``` npm install --save vue ```
+3. ``` npm install --save vue-browser-geolocation vue2-google-maps ```
 
 ### Running the Frontend component
 
