@@ -6,22 +6,29 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                    <h1> Your coordinates:</h1>
                    <p>{{ coordinates.lat}} Latitude, {{coordinates.lng}} Longitude</p>
-                    <!-- <GmapAutocomplete
-                    @place_changed='setPlace'
-                    /> -->
-                    <button @click= "showClinics">Show clinics</button>
-    <gmap-map
-        :center= "center"
-        :zoom= "7"
-        style= "width:100%;  height:600px;">
-        <gmap-marker
-          :key="index"
-          v-for="(gmp, index) in dentists"
-          :position="gmp"
-          @click="center=gmp"
-        ></gmap-marker>
-    </gmap-map>
-                   <hr class="divider" />
+                    <gmap-map
+                        :center= "center"
+                        :zoom= "7"
+                        style= "width:100%;  height:600px;"
+                        v-bind="options">
+                        <gmap-marker
+                          :key="index"
+                          v-for="(m, index) in markers"
+                          :position="m.position"
+                          :label="m.label"
+                          @click ="doPublish('Frontend', Clinic_ID+index++)"
+                          @mouseover="openWindow(m, index)" 
+                        ></gmap-marker>
+                        <gmap-info-window 
+                          @closeclick="window_open=false" 
+                          :opened="window_open" 
+                          :position="infoPosition"
+                          :options="infoOptions"
+                      >
+                          
+                      </gmap-info-window> 
+                    </gmap-map>
+                    <hr class="divider" />
                    
                 </div>
                 <div class="row gx-4 gx-lg-5 justify-content-center">
@@ -75,19 +82,18 @@
             <div class="container px-4 px-lg-5 text-center">
                 <h2 class="mt-0">Choose an available time</h2>                       
                 <div class="simple-example">
-    <vue-meeting-selector
-      class="simple-example__meeting-selector"
-      v-model="meeting"
-      :date="date"
-      :loading="loading"
-      :class-names="classNames"
-      :meetings-days="meetingsDays"
-      @next-date="nextDate"
-      @previous-date="previousDate"
-    />
-    <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
-  </div>
-    <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
+                    <vue-meeting-selector
+                      class="simple-example__meeting-selector"
+                      v-model="meeting"
+                      :date="date"
+                      :loading="loading"
+                      :class-names="classNames"
+                      :meetings-days="meetingsDays"
+                      @next-date="nextDate"
+                      @previous-date="previousDate"
+                    />
+                </div>
+                <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
                 <button class="btn btn-primary btn-xl" @click="scrollMeTo('contact')" id="confirm" :disabled="check">{{confirmed}}</button>
             </div>
         </section>
@@ -179,7 +185,7 @@ import mqtt from 'mqtt'
 import Navbar from '../components/navbar.vue'
 import VueMeetingSelector from 'vue-meeting-selector';
 import '../../public/css/styles.css'
-const currentLocation = {lat: 59.8757264, lng: 17.65862};
+import { dentists } from '../../public/assets/dentistRegistry.json'
 
 export default {
   name: 'Home',
@@ -217,14 +223,25 @@ export default {
       connected: 'Continue',
       confirmed: 'Confirm',
       //Map
+      infoPosition: null,
+      infoContent: null,
+      infoOptions: {
+        pixelOffset: {
+          width: 0,
+          height: -35
+        },
+        maxWidth: 10000,
+        content: null
+      },
+      window_open: false,
+      currentMidx: null, 
       coordinates: {
            lat: 0, 
            lng: 0
          },
-    center: { lat: 57.70635929297478, lng: 11.965216102046611},
+      center: { lat: 57.70635929297478, lng: 11.965216102046611},
          currentPlace: null,
          dentists: [],
-         markers: [],
          places: [],
         //Schedule 
          date: new Date(),
@@ -233,6 +250,7 @@ export default {
       loading: true,
       nbDaysToDisplay: 5,
       selectedClinic: null,
+      Clinic_ID: 'Clinic',
       }
   },
   computed: {
@@ -242,6 +260,29 @@ export default {
         tabLoading: 'loading-div',
       };
     },
+    markers(){
+      return dentists.map(({
+         name, coordinate: {longitude, latitude}, openinghours: {monday, tuesday, wednesday,thursday, friday}, address})=> ({
+        name: {
+          name,
+          color: '#333',
+          fontSize: '10px'
+        },
+        address,
+        position: {
+          lng: longitude,
+          lat: latitude          
+        },
+        openinghours:{
+          monday,
+          tuesday, 
+          wednesday,
+          thursday,
+          friday
+        }
+      })
+      );
+    }
   },
   mounted() {
       this.geolocate();
@@ -350,6 +391,42 @@ export default {
   }
 },
     //Map
+        getPosition: function(marker) {  
+      return {
+        lat: parseFloat(marker.position.lat),
+        lng: parseFloat(marker.position.lng)
+      }
+    },
+    openWindow(marker, idx) {
+      
+      //this.window_open = true;    
+
+      this.infoPosition = this.getPosition(marker);
+
+      this.infoOptions.content = '<div id="iw" class="iw-container">'+                                    
+                                    '<div class="iw-body">'+                                                             
+                                        '<h5 class="iw-address">'+
+                                            marker.name.name+
+                                        '</h5>'+
+                                        '<h6 class="iw-address">'+
+                                           'Address: '+ marker.address+
+                                        '</h6>'+ 
+                                        '<h8 class="iw-address">'+' Monday: '+ marker.openinghours.monday + ' || '+'</h8>'+
+                                        '<h7 class="iw-address">'+ 'Tuesday: '+ marker.openinghours.tuesday+' || '+'</h7>'+
+                                        '<h8 class="iw-address">'+ 'Wednsday: '+ marker.openinghours.wednesday+ ' || '+ '</h8>'+
+                                        '<h8 class="iw-address">'+ 'Thursday: '+ marker.openinghours.thursday+ ' || '+'</h8>'+
+                                        '<h8 class="iw-address">'+ 'Friday: '+ marker.openinghours.friday  + '</h8>'+
+                                    '</div>'                                                            
+                                 '</div>';
+
+      if (this.currentMidx === idx) {
+        this.window_open = !this.window_open;
+      }
+      else {
+        this.window_open = true;
+        this.currentMidx = idx;
+      }
+    },
     setPlace(place) {
       this.currentPlace = place;
     },
@@ -360,35 +437,6 @@ export default {
           lng: position.coords.longitude
         };
       });
-      this.dentists = [
-          {
-              lat: 57.707619,
-              lng: 11.969388,
-              label: 'Your Dentist'
-          },
-          {
-              lat: 57.685255,
-              lng: 11.942625,
-              label: '"Tooth Fairy Dentist'
-          },
-          {
-              lat: 57.709872,
-              lng: 11.940386,
-              label: 'The Crown'
-          },
-          {
-              lat: 57.694723,
-              lng: 11.991153,
-              label: 'Lisebergs Dentists'
-          }
-      ];
-    },
-    showClinics(){
-      this.markers= [
-        {
-          position: currentLocation,
-      }
-      ]
     },
     getClinics() {
       this.doSubscribe("frontend/allClinics");
