@@ -117,16 +117,23 @@
                     </form>
                   </div>  
                 </div>
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-4 text-center mb-5 mb-lg-0">
-                        <i class="bi-phone fs-2 mb-3 text-muted"></i>
-                        <div>+46 0000000000000</div>
-                    </div>
-                </div>
+
             </div>
         </section>
         <!-- Footer-->
         <footer class="bg-light py-5" id="footer">
+          <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-4 text-center mb-5 mb-lg-0">
+                        <i class="bi-phone fs-2 mb-3 text-muted"></i>
+                        
+                        <div>Contact: +46 1234567
+                        <p>info@gitlab.com</p>
+                          
+                        </div>
+                         
+                    </div>
+                     
+                </div>
             <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2021 - Group 12</div></div>
         </footer>
 
@@ -272,6 +279,7 @@ export default {
           if (message == "bookFail") {
             window.alert("Appointment could not be made");
           } else if (message == "bookSuccess") {
+            getSchedule(this.selectedClinic);
               window.alert("Appointment was successfully booked");
           } else {
             // load schedule
