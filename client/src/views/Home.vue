@@ -105,10 +105,23 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
                   <div class="col-lg-6">
                     <form id="contactForm">
-                    <b-form-input placeholder="Name" list="input-list" id="input-with-list"></b-form-input>
                     <br>
-                    <b-form-input placeholder="Phone number" type="number" class="noscroll" list="input-list" id="input-with-list"></b-form-input>
-                    <br>
+                     <!-- Name input-->
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
+                                <label for="name">Full name</label>
+                                <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
+                            </div>
+
+                            <!-- Phone number input-->
+                            <div class="form-floating mb-3">   
+                                                      
+                                <input class="form-control" type="text" id="phone" data-sb-validations="required"
+                                       oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
+                                       <label for="phone">Phone number</label> 
+                                <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
+                            </div>
+
                     <div style="text-align:center">
                       <button class="btn btn-primary btn-xl" :disabled="check" @click="sendForm()">{{confirmed}}</button>
                       <br><br><br>
