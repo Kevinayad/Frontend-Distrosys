@@ -14,9 +14,8 @@
                           :key="index"
                           v-for="(m, index) in markers"
                           :position="m.position"   
-                          @click ="getSchedule(index++)"                                     
+                          @click ="getSchedule(index + 1); scrollMeTo('schedule')"                                     
                           @mouseover="openWindow(m, index)" 
-                          @dblclick="scrollMeTo('schedule')"
                         ></gmap-marker>
                         <gmap-info-window 
                           @closeclick="window_open=false" 
@@ -108,7 +107,7 @@
                     <form id="contactForm">
                     <b-form-input placeholder="Name" list="input-list" id="input-with-list"></b-form-input>
                     <br>
-                    <b-form-input placeholder="Phone number" list="input-list" id="input-with-list"></b-form-input>
+                    <b-form-input placeholder="Phone number" type="number" class="noscroll" list="input-list" id="input-with-list"></b-form-input>
                     <br>
                     <div style="text-align:center">
                       <button class="btn btn-primary btn-xl" :disabled="check" @click="sendForm()">{{confirmed}}</button>
@@ -279,8 +278,8 @@ export default {
           if (message == "bookFail") {
             window.alert("Appointment could not be made");
           } else if (message == "bookSuccess") {
-            getSchedule(this.selectedClinic);
-              window.alert("Appointment was successfully booked");
+            window.alert("Appointment was successfully booked");
+            this.getSchedule(this.selectedClinic);
           } else {
             // load schedule
             this.meetingsDays= (JSON.parse(message))[this.Clinic_ID + this.selectedClinic];
