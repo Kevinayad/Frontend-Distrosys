@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <Nav/>
             <!-- About-->
         <section class="page-section bg-white" id="about">
             <div class="container px-4 px-lg-5">
@@ -13,9 +14,8 @@
                           :key="index"
                           v-for="(m, index) in markers"
                           :position="m.position"   
-                          @click ="getSchedule(index++)"                                     
+                          @click ="getSchedule(index + 1); scrollMeTo('schedule')"                                     
                           @mouseover="openWindow(m, index)" 
-                          @dblclick="scrollMeTo('schedule')"
                         ></gmap-marker>
                         <gmap-info-window 
                           @closeclick="window_open=false" 
@@ -74,18 +74,22 @@
                 <h2 class="mt-0">Choose an available time</h2>                       
                 <div class="simple-example">
                     <vue-meeting-selector
-                      class="simple-example__meeting-selector"
+                      class="meetingSelectedClass(meeting)"
                       v-model="meeting"
                       :date="date"
                       :loading="loading"
                       :class-names="classNames"
                       :meetings-days="meetingsDays"
-                      @next-date="nextDate"
-                      @previous-date="previousDate"
-                    />
-                </div>
-                <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
+                       @next-date="nextDate"
+                      @previous-date="previousDate" 
+                      >
+                                    
+                </vue-meeting-selector>   
+                <!-- <p>Meeting Selected: {{ meeting.date}} </p>   -->
+                <hr class="divider" />
+                <!-- <p> {{ meeting ? meeting : 'No Meeting selected' }}</p> -->
                 <button class="btn btn-primary btn-xl" @click="scrollMeTo('contact')" id="confirm" :disabled="check">{{confirmed}}</button>
+              </div>
             </div>
         </section>
         <!-- Contact-->
@@ -101,10 +105,23 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
                   <div class="col-lg-6">
                     <form id="contactForm">
-                    <b-form-input placeholder="Name" list="input-list" id="input-with-list"></b-form-input>
                     <br>
-                    <b-form-input placeholder="Phone number" list="input-list" id="input-with-list"></b-form-input>
-                    <br>
+                     <!-- Name input-->
+                            <div class="form-floating mb-3">
+                                <input class="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
+                                <label for="name">Full name</label>
+                                <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
+                            </div>
+
+                            <!-- Phone number input-->
+                            <div class="form-floating mb-3">   
+                                                      
+                                <input class="form-control" type="text" id="phone" data-sb-validations="required"
+                                       oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
+                                       <label for="phone">Phone number</label> 
+                                <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
+                            </div>
+
                     <div style="text-align:center">
                       <button class="btn btn-primary btn-xl" :disabled="check" @click="sendForm()">{{confirmed}}</button>
                       <br><br><br>
@@ -112,16 +129,23 @@
                     </form>
                   </div>  
                 </div>
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-4 text-center mb-5 mb-lg-0">
-                        <i class="bi-phone fs-2 mb-3 text-muted"></i>
-                        <div>+46 0000000000000</div>
-                    </div>
-                </div>
+
             </div>
         </section>
         <!-- Footer-->
-        <footer class="bg-light py-5">
+        <footer class="bg-light py-5" id="footer">
+          <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-4 text-center mb-5 mb-lg-0">
+                        <i class="bi-phone fs-2 mb-3 text-muted"></i>
+                        
+                        <div>Contact: +46 1234567
+                        <p>info@gitlab.com</p>
+                          
+                        </div>
+                         
+                    </div>
+                     
+                </div>
             <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2021 - Group 12</div></div>
         </footer>
 
@@ -134,6 +158,7 @@ import Navbar from '../components/navbar.vue'
 import VueMeetingSelector from 'vue-meeting-selector';
 import '../../public/css/styles.css'
 import { dentists } from '../../public/assets/dentistRegistry.json'
+
 
 export default {
   name: 'Home',
@@ -194,11 +219,12 @@ export default {
         //Schedule 
          date: new Date(),
       meetingsDays: [],
-      meeting: null,       //<-- Selected date and time
+      meeting:  null,       //<-- Selected date and time
       loading: true,
       nbDaysToDisplay: 5,
       selectedClinic: 0,  //<-- Data type: Number
-      Clinic_ID: 'Clinic'
+      Clinic_ID: 'Clinic',
+
       }
   },
   computed: {
@@ -265,7 +291,8 @@ export default {
           if (message == "bookFail") {
             window.alert("Appointment could not be made");
           } else if (message == "bookSuccess") {
-              window.alert("Appointment was successfully booked");
+            window.alert("Appointment was successfully booked");
+            this.getSchedule(this.selectedClinic);
           } else {
             // load schedule
             this.meetingsDays= (JSON.parse(message))[this.Clinic_ID + this.selectedClinic];
@@ -306,13 +333,13 @@ export default {
       })
     },
     doUnSubscribe() {
-  const { topic } = this.subscription
-  this.client.unsubscribe(topic, error => {
-    if (error) {
-      console.log('Unsubscribe error', error)
-    }
-  })
-},
+      const { topic } = this.subscription
+      this.client.unsubscribe(topic, error => {
+        if (error) {
+          console.log('Unsubscribe error', error)
+        }
+      })
+    },
     doPublish(topic, payload) {
       this.client.publish(topic, payload, 2, error => {
         if (error) {
@@ -321,18 +348,18 @@ export default {
       })
     },
     destroyConnection() {
-  if (this.client.connected) {
-    try {
-      this.client.end()
-      this.client = {
-        connected: false,
-      }
-      console.log('Successfully disconnected!')
-    } catch (error) {
-      console.log('Disconnect failed', error.toString())
-    }
-  }
-},
+      if (this.client.connected) {
+        try {
+            this.client.end()
+            this.client = {
+              connected: false,
+            }
+            console.log('Successfully disconnected!')
+          } catch (error) {
+            console.log('Disconnect failed', error.toString())
+            }
+          }
+        },
     //Map
         getPosition: function(marker) {  
       return {
@@ -340,9 +367,7 @@ export default {
         lng: parseFloat(marker.position.lng)
       }
     },
-    openWindow(marker, idx) {
-      
-      //this.window_open = true;    
+    openWindow(marker, idx) {  
 
       this.infoPosition = this.getPosition(marker);
 
@@ -394,28 +419,20 @@ export default {
       });
     },
     //Schedule
+    formatingDate(d) {
+      //const d =  new Date(meeting.date);
+      const day = d.getDate() < 10 ? `0${d.getDate()}` : d.getDate();
+      const month = d.getMonth() + 1 < 10 ? `0${d.getMonth() + 1}` : d.getMonth() + 1;
+      const year = d.getFullYear();
+      return `${year}-${month}-${day}`;
+    },
     // @click on button-right
     async nextDate() {
-      // display loading
-      this.loading = true;
-      // calcul new Date and change actual
-      this.date = newDate;
-      // get meetings with async function
-      this.meetingsDays = await getNewDates(this.date);
-      // hide loading
-      this.loading = false;
+      window.alert('There are no more time slots available. Please choose one of the existing ones!');
     },
     // @click on button-left
     async previousDate() {
-      // display loading
-      this.loading = true;
-      // calcul new Date and change actual
-      // you might need to handle the fact you can't go in past
-      this.date = newDate;
-      // get meetings with async function
-      this.meetingsDays = await getNewDates(this.date);
-      // hide loading
-      this.loading = false;
+      window.alert('You cannot book the past dates');
     },
     getSchedule(clinicNumber){
       this.selectedClinic = clinicNumber
