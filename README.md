@@ -36,7 +36,7 @@ This repository additionally contains technologies and/or parts of code licensed
 
 ### Running the Frontend component
 
-1. npm run serve 
+1. ``` npm run serve ```
 
 ## Development Team
 

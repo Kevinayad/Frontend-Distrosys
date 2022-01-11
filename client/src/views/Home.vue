@@ -75,18 +75,22 @@
                 <h2 class="mt-0">Choose an available time</h2>                       
                 <div class="simple-example">
                     <vue-meeting-selector
-                      class="simple-example__meeting-selector"
+                      class="meetingSelectedClass(meeting)"
                       v-model="meeting"
                       :date="date"
                       :loading="loading"
                       :class-names="classNames"
                       :meetings-days="meetingsDays"
-                      @next-date="nextDate"
-                      @previous-date="previousDate"
-                    />
-                </div>
-                <p>meeting Selected: {{ meeting ? meeting : 'No Meeting selected' }}</p>
+                       @next-date="nextDate"
+                      @previous-date="previousDate" 
+                      >
+                                    
+                </vue-meeting-selector>   
+                <!-- <p>Meeting Selected: {{ meeting.date}} </p>   -->
+                <hr class="divider" />
+                <!-- <p> {{ meeting ? meeting : 'No Meeting selected' }}</p> -->
                 <button class="btn btn-primary btn-xl" @click="scrollMeTo('contact')" id="confirm" :disabled="check">{{confirmed}}</button>
+              </div>
             </div>
         </section>
         <!-- Contact-->
@@ -135,6 +139,7 @@ import Navbar from '../components/navbar.vue'
 import VueMeetingSelector from 'vue-meeting-selector';
 import '../../public/css/styles.css'
 import { dentists } from '../../public/assets/dentistRegistry.json'
+
 
 export default {
   name: 'Home',
@@ -195,11 +200,12 @@ export default {
         //Schedule 
          date: new Date(),
       meetingsDays: [],
-      meeting: null,       //<-- Selected date and time
+      meeting:  null,       //<-- Selected date and time
       loading: true,
       nbDaysToDisplay: 5,
       selectedClinic: 0,  //<-- Data type: Number
-      Clinic_ID: 'Clinic'
+      Clinic_ID: 'Clinic',
+
       }
   },
   computed: {
@@ -307,13 +313,13 @@ export default {
       })
     },
     doUnSubscribe() {
-  const { topic } = this.subscription
-  this.client.unsubscribe(topic, error => {
-    if (error) {
-      console.log('Unsubscribe error', error)
-    }
-  })
-},
+      const { topic } = this.subscription
+      this.client.unsubscribe(topic, error => {
+        if (error) {
+          console.log('Unsubscribe error', error)
+        }
+      })
+    },
     doPublish(topic, payload) {
       this.client.publish(topic, payload, 2, error => {
         if (error) {
@@ -322,18 +328,18 @@ export default {
       })
     },
     destroyConnection() {
-  if (this.client.connected) {
-    try {
-      this.client.end()
-      this.client = {
-        connected: false,
-      }
-      console.log('Successfully disconnected!')
-    } catch (error) {
-      console.log('Disconnect failed', error.toString())
-    }
-  }
-},
+      if (this.client.connected) {
+        try {
+            this.client.end()
+            this.client = {
+              connected: false,
+            }
+            console.log('Successfully disconnected!')
+          } catch (error) {
+            console.log('Disconnect failed', error.toString())
+            }
+          }
+        },
     //Map
         getPosition: function(marker) {  
       return {
@@ -341,9 +347,7 @@ export default {
         lng: parseFloat(marker.position.lng)
       }
     },
-    openWindow(marker, idx) {
-      
-      //this.window_open = true;    
+    openWindow(marker, idx) {  
 
       this.infoPosition = this.getPosition(marker);
 
@@ -395,28 +399,20 @@ export default {
       });
     },
     //Schedule
+    formatingDate(d) {
+      //const d =  new Date(meeting.date);
+      const day = d.getDate() < 10 ? `0${d.getDate()}` : d.getDate();
+      const month = d.getMonth() + 1 < 10 ? `0${d.getMonth() + 1}` : d.getMonth() + 1;
+      const year = d.getFullYear();
+      return `${year}-${month}-${day}`;
+    },
     // @click on button-right
     async nextDate() {
-      // display loading
-      this.loading = true;
-      // calcul new Date and change actual
-      this.date = newDate;
-      // get meetings with async function
-      this.meetingsDays = await getNewDates(this.date);
-      // hide loading
-      this.loading = false;
+      window.alert('There are no more time slots available. Please choose one of the existing ones!');
     },
     // @click on button-left
     async previousDate() {
-      // display loading
-      this.loading = true;
-      // calcul new Date and change actual
-      // you might need to handle the fact you can't go in past
-      this.date = newDate;
-      // get meetings with async function
-      this.meetingsDays = await getNewDates(this.date);
-      // hide loading
-      this.loading = false;
+      window.alert('You cannot book the past dates');
     },
     getSchedule(clinicNumber){
       this.selectedClinic = clinicNumber
